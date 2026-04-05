@@ -23,7 +23,7 @@ impl Lexer {
             } else { break; }
         } 
     }
-    pub fn number_parse(&mut self) -> Token {
+    pub fn parse_number(&mut self) -> Token {
         let mut founded_value = String::new(); 
         while let Some(current) = self.peek() {
             if current.is_ascii_digit() {
@@ -33,10 +33,33 @@ impl Lexer {
         }
         Token { token_type: TokenKind::Number(founded_value.parse::<i32>().unwrap()), lexeme: founded_value, }
     }
+    pub fn parse_identifier(&mut self) -> Token {
+        let mut identf = String::new();
+        while let Some(current) = self.peek() {
+            if current.is_alphanumeric() {
+                identf.push(current);
+                self.advance();
+            } else { break; }
+        }
+        let token_type = match identf.as_str() {
+            "escreva" => TokenKind::Print, 
+            _ => TokenKind::Identifier(identf.clone()),
+        };
+        Token { token_type: token_type, lexeme: identf, }
+    }
     pub fn next_token(&mut self) -> Token {
         self.skip_whitespace();
         match self.peek() {
-            Some(c) if c.is_ascii_digit() => self.number_parse(),
+            Some(c) if c.is_ascii_digit() => self.parse_number(),
+            Some(c) if c.is_alphabetic() => self.parse_identifier(),
+            Some('(') => {
+                self.advance();
+                Token { token_type: TokenKind::LParen, lexeme: "(".to_string(), }
+            },
+            Some(')') => {
+                self.advance();
+                Token { token_type: TokenKind::RParen, lexeme: ")".to_string(), }
+            },
             _ => Token { token_type: TokenKind::EOF, lexeme: "".to_string(), }
         }
     }

@@ -4,7 +4,7 @@ mod token_kind;
 use crate::{lexer::Lexer, token_kind::TokenKind};
 
 fn main() {
-    let source = "10";
+    let source = r#"escreva(12)"#;
     let mut lex = Lexer::new(source);
     
     loop {

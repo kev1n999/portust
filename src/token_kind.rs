@@ -3,13 +3,14 @@ pub enum TokenKind {
     True,
     False,
     Function,
-    Identifier,
+    Identifier(String),
     Number(i32),
     String(String),
     LParen,
     RParen,
     Equals,
     Plus,
+    Print,
     EOF,
 }
 
