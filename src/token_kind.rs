@@ -1,3 +1,4 @@
+#[derive(Debug, PartialEq)]
 pub enum TokenKind {
     True,
     False,
@@ -12,6 +13,7 @@ pub enum TokenKind {
     EOF,
 }
 
+#[derive(Debug, PartialEq)]
 pub struct Token {
     pub token_type: TokenKind,
     pub lexeme: String,
