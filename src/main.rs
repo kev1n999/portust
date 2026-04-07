@@ -7,7 +7,8 @@ fn main() {
     let source = r#"
     funcao blablbalaalal(x, y) {
         true_test = verdadeiro 
-        false_test = falso
+        false_test = falso 
+        str_test = "hello world"
     }"#;
     let mut lex = Lexer::new(source);
     

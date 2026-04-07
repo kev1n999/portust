@@ -50,11 +50,25 @@ impl Lexer {
         };
         Token { token_type: token_type, lexeme: identf, }
     }
+    pub fn parse_string(&mut self) -> Token {
+        self.advance();
+        let mut str_val = String::new();
+        while let Some(current) = self.peek() {
+            if current == '"' {
+                break; 
+            }
+            str_val.push(current);
+            self.advance();
+        }
+        self.advance();
+        Token { token_type: TokenKind::String(str_val.clone()), lexeme: str_val.clone(), }
+    }
     pub fn next_token(&mut self) -> Token {
         self.skip_whitespace();
         match self.peek() {
             Some(c) if c.is_ascii_digit() => self.parse_number(),
             Some(c) if c.is_alphabetic() => self.parse_identifier(),
+            Some('"') => self.parse_string(),
             Some('(') => {
                 self.advance();
                 Token { token_type: TokenKind::LParen, lexeme: "(".to_string(), }
@@ -82,6 +96,10 @@ impl Lexer {
             Some('=') => {
                 self.advance();
                 Token { token_type: TokenKind::Equals, lexeme: "=".to_string(), }
+            },
+            Some('+') => {
+                self.advance();
+                Token { token_type: TokenKind::Plus, lexeme: "+".to_string(), }
             },
             _ => Token { token_type: TokenKind::EOF, lexeme: "".to_string(), }
         }
