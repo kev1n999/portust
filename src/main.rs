@@ -4,7 +4,11 @@ mod token_kind;
 use crate::{lexer::Lexer, token_kind::TokenKind};
 
 fn main() {
-    let source = r#"escreva(12)"#;
+    let source = r#"
+    funcao blablbalaalal(x, y) {
+        true_test = verdadeiro 
+        false_test = falso
+    }"#;
     let mut lex = Lexer::new(source);
     
     loop {

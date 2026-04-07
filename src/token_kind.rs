@@ -11,6 +11,10 @@ pub enum TokenKind {
     Equals,
     Plus,
     Print,
+    Colon,
+    Comma,
+    LeftBrace,
+    RightBrace,
     EOF,
 }
 

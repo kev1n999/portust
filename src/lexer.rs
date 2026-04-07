@@ -36,13 +36,16 @@ impl Lexer {
     pub fn parse_identifier(&mut self) -> Token {
         let mut identf = String::new();
         while let Some(current) = self.peek() {
-            if current.is_alphanumeric() {
+            if current.is_alphanumeric() || current == '_' {
                 identf.push(current);
                 self.advance();
             } else { break; }
         }
         let token_type = match identf.as_str() {
             "escreva" => TokenKind::Print, 
+            "funcao" => TokenKind::Function,
+            "verdaeiro" => TokenKind::True,
+            "falso" => TokenKind::False,
             _ => TokenKind::Identifier(identf.clone()),
         };
         Token { token_type: token_type, lexeme: identf, }
@@ -59,6 +62,26 @@ impl Lexer {
             Some(')') => {
                 self.advance();
                 Token { token_type: TokenKind::RParen, lexeme: ")".to_string(), }
+            },
+            Some(':') => {
+                self.advance();
+                Token { token_type: TokenKind::Colon, lexeme: ":".to_string(), }
+            },
+            Some(',') => {
+                self.advance();
+                Token { token_type: TokenKind::Comma, lexeme: ",".to_string(), }
+            },
+            Some('{') => {
+                self.advance();
+                Token { token_type: TokenKind::LeftBrace, lexeme: "{".to_string(), }
+            },
+            Some('}') => {
+                self.advance();
+                Token { token_type: TokenKind::RightBrace, lexeme: "}".to_string(), }
+            },
+            Some('=') => {
+                self.advance();
+                Token { token_type: TokenKind::Equals, lexeme: "=".to_string(), }
             },
             _ => Token { token_type: TokenKind::EOF, lexeme: "".to_string(), }
         }
