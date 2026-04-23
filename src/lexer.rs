@@ -101,6 +101,10 @@ impl Lexer {
                 self.advance();
                 Token { token_type: TokenKind::Plus, lexeme: "+".to_string(), }
             },
+            Some(';') => {
+                self.advance();
+                Token { token_type: TokenKind::SemiColon, lexeme: ";".to_string(), }
+            },
             _ => Token { token_type: TokenKind::EOF, lexeme: "".to_string(), }
         }
     }

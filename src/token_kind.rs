@@ -13,6 +13,7 @@ pub enum TokenKind {
     Print,
     Colon,
     Comma,
+    SemiColon,
     LeftBrace,
     RightBrace,
     EOF,
