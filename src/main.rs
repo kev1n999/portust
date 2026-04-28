@@ -1,24 +1,23 @@
 mod lexer;
 mod parser;
 
-use crate::lexer::lexer::{Lexer};
-use crate::lexer::tokens::{TokenKind};
+use crate::lexer::lexer::Lexer;
+use crate::lexer::tokens::TokenKind;
+use crate::parser::parser::Parser;
 
 fn main() {
-    let source = r#"
-    funcao blablbalaalal(x, y) {
-        true_test = verdadeiro;
-        false_test = falso; 
-        str_test = "hello world";
-    }"#;
-    let mut lex = Lexer::new(source);
+    let source = "10 + 10";
     
+    let mut all_tokens = Vec::new();
+    let mut lex = Lexer::new(source);
+
     loop {
         let token = lex.next_token();
-        if token.token_type == TokenKind::EOF {
-            println!("{:#?}", token);
-            break;
-        }
-        println!("{:#?}", token);
+        if token.token_type == TokenKind::EOF { break; }
+        all_tokens.push(token);
     }
+
+    let mut parser = Parser::new(all_tokens);
+    let expr = parser.parse_expression().unwrap();
+    println!("{:#?}", expr);
 }   

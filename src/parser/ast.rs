@@ -10,7 +10,7 @@ pub enum Operator {
 // basic AST to expressions representation
 #[derive(Debug)]    
 pub enum Expr {
-    Number(f64), 
+    Number(i32), 
     Binary {
         left: Box<Expr>, 
         op: Operator, 
