@@ -1,7 +1,8 @@
 mod lexer;
-mod token_kind; 
+mod parser;
 
-use crate::{lexer::Lexer, token_kind::TokenKind};
+use crate::lexer::lexer::{Lexer};
+use crate::lexer::tokens::{TokenKind};
 
 fn main() {
     let source = r#"
