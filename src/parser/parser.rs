@@ -25,19 +25,20 @@ impl Parser {
     pub fn previous(&self) -> &Token {
         &self.tokens[self.current -1]
     }
-    pub fn match_token(&mut self, expected_token_type: TokenKind) -> Option<Operator> {
-        match self.peek() {
-            Some(token) => {
-                if token.token_type == expected_token_type {
+    pub fn match_token(&mut self, expected_token_type: &[TokenKind]) -> Option<Operator> {
+        if let Some(token) = self.peek() {
+            for kind in expected_token_type {
+                if *kind == token.token_type {
                     self.advance();
-
-                    return match expected_token_type {
+                    return match kind {
                         TokenKind::Plus => Some(Operator::Add),
+                        TokenKind::Minus => Some(Operator::Subtraction),
+                        TokenKind::Star => Some(Operator::Multiply),
+                        TokenKind::Slash => Some(Operator::Division),
                         _ => None,
                     }
                 }
-            },
-            _ => eprintln!("")
+            }
         }
         None
     }
@@ -59,13 +60,15 @@ impl Parser {
         match self.parse_number() {
             Ok(expr) => {
                 let mut left = expr;
-                while let Some(operator) = self.match_token(TokenKind::Plus) {
-                    if let Ok(right) = self.parse_number() {
-                        left = Expr::Binary {
-                            left: Box::new(left),
-                            op: operator,
-                            right: Box::new(right),
-                        }
+                while let Some(operator) = self.match_token(&[
+                    TokenKind::Plus, TokenKind::Minus, 
+                    TokenKind::Star, TokenKind::Slash,
+                ]) {
+                    let right = self.parse_number()?;
+                    left = Expr::Binary {
+                        left: Box::new(left),
+                        op: operator,
+                        right: Box::new(right),
                     }
                 }
                 Ok(left)

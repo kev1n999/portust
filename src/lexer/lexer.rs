@@ -101,6 +101,18 @@ impl Lexer {
                 self.advance();
                 Token { token_type: TokenKind::Plus, lexeme: "+".to_string(), }
             },
+            Some('-') => {
+                self.advance();
+                Token { token_type: TokenKind::Minus, lexeme: "-".to_string(), }
+            },
+            Some('*') => {
+                self.advance();
+                Token { token_type: TokenKind::Star, lexeme: "*".to_string(), }
+            },
+            Some('/') => {
+                self.advance();
+                Token { token_type: TokenKind::Slash, lexeme: "/".to_string(), }
+            }
             Some(';') => {
                 self.advance();
                 Token { token_type: TokenKind::SemiColon, lexeme: ";".to_string(), }

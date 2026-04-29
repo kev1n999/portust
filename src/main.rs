@@ -6,7 +6,7 @@ use crate::lexer::tokens::TokenKind;
 use crate::parser::parser::Parser;
 
 fn main() {
-    let source = "10 + 10";
+    let source = "10 - 10";
     
     let mut all_tokens = Vec::new();
     let mut lex = Lexer::new(source);
