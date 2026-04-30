@@ -7,6 +7,11 @@ pub enum Operator {
     Division, 
 }
 
+#[derive(Debug)]
+pub enum Statement {
+    Expression(Expr)
+}
+
 // basic AST to expressions representation
 #[derive(Debug)]    
 pub enum Expr {

@@ -1,5 +1,5 @@
 use crate::lexer::tokens::{Token, TokenKind};
-use crate::parser::ast::{Expr, Operator};
+use crate::parser::ast::{Expr, Operator, Statement};
 
 #[derive(Debug)]
 pub struct Parser {
@@ -54,6 +54,26 @@ impl Parser {
                 }
             },
             None => Err("An error ocurred!".to_string())
+        }
+    }
+    // method to consume the semicolon delimiter(;)
+    pub fn consume_delimiter(&mut self) {
+        match self.peek() {
+            Some(token) => {
+                if token.token_type == TokenKind::SemiColon {
+                    self.advance();
+                }
+            },
+            None => { self.advance(); }
+        }
+    }
+    pub fn parse_statement(&mut self) -> Option<Statement> {
+        match self.parse_expression() {
+            Ok(expr) => {
+                self.consume_delimiter(); 
+                return Some(Statement::Expression(expr))
+            },
+            Err(_) => None,
         }
     }
     pub fn parse_expression(&mut self) -> Result<Expr, String> {
