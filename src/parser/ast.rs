@@ -21,4 +21,8 @@ pub enum Expr {
         op: Operator, 
         right: Box<Expr>,
     },
+    Assign {
+        name: String,
+        value: Box<Expr>,
+    }, 
 }
