@@ -56,21 +56,24 @@ impl Parser {
             None => Err("An error ocurred!".to_string())
         }
     }
-    // method to consume the semicolon delimiter(;)
-    pub fn consume_delimiter(&mut self) {
-        match self.peek() {
-            Some(token) => {
-                if token.token_type == TokenKind::SemiColon {
-                    self.advance();
-                }
-            },
-            None => { self.advance(); }
+    pub fn consume(&mut self, expected_token: TokenKind, err_msg: &str) -> Result<Token, String> {
+        if let Some(token) = self.peek() {
+            if token.token_type == expected_token {
+                let cloned_token = token.clone(); 
+                self.advance();
+                return Ok(cloned_token);
+            } else {
+                return Err(err_msg.to_string());
+            }
         }
+        Err(err_msg.to_string())
     }
     pub fn parse_statement(&mut self) -> Option<Statement> {
         match self.parse_expression() {
             Ok(expr) => {
-                self.consume_delimiter(); 
+                if let Err(err) = self.consume(TokenKind::SemiColon, "Expected SemiColon ';'") {
+                    panic!("{:?}", &err);
+                }
                 return Some(Statement::Expression(expr))
             },
             Err(_) => None,
