@@ -63,14 +63,14 @@ impl Parser {
             None => Err("An error ocurred!".to_string())
         }
     }
-    pub fn consume(&mut self, expected_token: TokenKind, err_msg: &str) -> Result<Token, String> {
+    pub fn consume<F>(&mut self, check: F, err_msg: &str) -> Result<Token, String> 
+        where F: Fn(&TokenKind) -> bool
+    {
         if let Some(token) = self.peek() {
-            if token.token_type == expected_token {
+            if check(&token.token_type) {
                 let cloned_token = token.clone(); 
                 self.advance();
                 return Ok(cloned_token);
-            } else {
-                return Err(err_msg.to_string());
             }
         }
         Err(err_msg.to_string())
@@ -78,7 +78,7 @@ impl Parser {
     pub fn parse_statement(&mut self) -> Option<Statement> {
         match self.parse_expression() {
             Ok(expr) => {
-                if let Err(err) = self.consume(TokenKind::SemiColon, "Expected SemiColon ';'") {
+                if let Err(err) = self.consume(|t| matches!(t, TokenKind::SemiColon), "Expected SemiColon ';'") {
                     panic!("{:?}", &err);
                 }
                 return Some(Statement::Expression(expr))
