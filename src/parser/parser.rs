@@ -25,22 +25,29 @@ impl Parser {
     pub fn previous(&self) -> &Token {
         &self.tokens[self.current -1]
     }
-    pub fn match_token(&mut self, expected_token_type: &[TokenKind]) -> Option<Operator> {
+    pub fn expected_token(&mut self, expected_token: TokenKind) -> Option<TokenKind> {
         if let Some(token) = self.peek() {
-            for kind in expected_token_type {
-                if *kind == token.token_type {
-                    self.advance();
-                    return match kind {
-                        TokenKind::Plus => Some(Operator::Add),
-                        TokenKind::Minus => Some(Operator::Subtraction),
-                        TokenKind::Star => Some(Operator::Multiply),
-                        TokenKind::Slash => Some(Operator::Division),
-                        _ => None,
-                    }
-                }
-            }
+            if token.token_type == expected_token {
+                let cloned_token = token.token_type.clone(); 
+                self.advance(); 
+                return Some(cloned_token);
+            } 
         }
         None
+    } 
+    pub fn parse_operator(&mut self, expected_token_type: &[TokenKind]) -> Option<Operator> {
+        for kind in expected_token_type {
+            if let Some(token_type) = self.expected_token(kind.clone()) {
+                return match token_type {
+                    TokenKind::Plus => Some(Operator::Add),
+                    TokenKind::Minus => Some(Operator::Subtraction),
+                    TokenKind::Star => Some(Operator::Multiply),
+                    TokenKind::Slash => Some(Operator::Division),
+                    _ => None,
+                };
+            }
+        }
+        None 
     }
     pub fn parse_number(&mut self) -> Result<Expr, String> {
         match self.peek() {
@@ -83,7 +90,7 @@ impl Parser {
         match self.parse_number() {
             Ok(expr) => {
                 let mut left = expr;
-                while let Some(operator) = self.match_token(&[
+                while let Some(operator) = self.parse_operator(&[
                     TokenKind::Plus, TokenKind::Minus, 
                     TokenKind::Star, TokenKind::Slash,
                 ]) {
