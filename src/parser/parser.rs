@@ -75,16 +75,41 @@ impl Parser {
         }
         Err(err_msg.to_string())
     }
-    pub fn parse_statement(&mut self) -> Option<Statement> {
-        match self.parse_expression() {
-            Ok(expr) => {
-                if let Err(err) = self.consume(|t| matches!(t, TokenKind::SemiColon), "Expected SemiColon ';'") {
-                    panic!("{:?}", &err);
-                }
-                return Some(Statement::Expression(expr))
-            },
-            Err(_) => None,
+    pub fn parse_assignment(&mut self) -> Result<Expr, String> {
+        let mut assign = String::new(); 
+        
+        if let Some(_) = self.peek() {
+            match self.consume(|t| matches!(t, TokenKind::Identifier(_)), "Expected Identifier!") {
+                Ok(token) => {
+                    if let TokenKind::Identifier(idt) = &token.token_type {
+                        assign.push_str(idt);
+                    } else { unreachable!() }
+                },
+                Err(err) => return Err(err),
+            }
         }
+
+        self.consume(|t| matches!(t, TokenKind::Equals), "Expected Equals(=)!")?;
+        let expression = self.parse_expression()?;
+
+        Ok(Expr::Assign {
+            name: assign, 
+            value: Box::new(expression),
+        })
+    }
+    pub fn parse_statement(&mut self) -> Option<Statement> {
+        if let Some(token) = self.peek() {
+            if matches!(token.token_type, TokenKind::Identifier(_)) {
+                if let Some(next) = self.tokens.get(self.current+1) {
+                    if matches!(next.token_type, TokenKind::Equals) {
+                        let expr = self.parse_assignment().ok()?;
+                        self.consume(|t| matches!(t, TokenKind::SemiColon), "Expected SemiColon!(;)").ok()?;
+                        return Some(Statement::Expression(expr))
+                    }
+                }
+            }
+        }
+        None
     }
     pub fn parse_expression(&mut self) -> Result<Expr, String> {
         match self.parse_number() {

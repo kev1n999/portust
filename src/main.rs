@@ -5,43 +5,47 @@ mod interpreter;
 use crate::interpreter::interpreter::Interpreter;
 use crate::lexer::lexer::Lexer;
 use crate::lexer::tokens::TokenKind;
-use crate::parser::ast::{Expr, Statement};
+use crate::parser::ast::Statement;
 use crate::parser::parser::Parser;
 
 fn main() {
     let source = r#"
-        10 - 10; 
-        23 + 43;  
-        324 / 34; 
-        34 * 342;
+        x = 10 - 10;
+        y = 23 + 43;
+        z = 324 / 34;
+        w = 34 * 342;
     "#;
-    
-    let mut all_tokens = Vec::new();
-    let mut lex = Lexer::new(source);
-    let mut statements: Vec<Statement> = Vec::new();
+
+    let mut tokens = Vec::new();
+    let mut lexer = Lexer::new(source);
 
     loop {
-        let token = lex.next_token();
+        let token = lexer.next_token();
         if token.token_type == TokenKind::EOF { break; }
-        all_tokens.push(token);
+        tokens.push(token);
     }
 
-    let mut parser = Parser::new(all_tokens);
+    let mut parser = Parser::new(tokens);
+    let mut statements = Vec::new();
 
     loop {
-        let sttm = parser.parse_statement();
-        if let Some(statement) = sttm {
-            statements.push(statement);
-        } else { break; }
-    }
-
-    let mut interpreter = Interpreter::new();
-    for sttm in statements {
-        match sttm {
-            Statement::Expression(expr) => {
-                let result: i32 = interpreter.eval(expr);
-                println!("{}", result);
-            }
+        match parser.parse_statement() {
+            Some(stt) => {
+                statements.push(stt);
+            },
+            _ => break,
         }
     }
-}   
+
+    // println!("{:#?}", statements);
+    let mut interpreter = Interpreter::new();
+    
+    for stt in statements {
+        match stt {
+            Statement::Expression(expr) => {
+                println!("{}", interpreter.eval(expr));
+            },
+        }
+    }
+    
+}
