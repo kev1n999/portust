@@ -103,8 +103,10 @@ impl Parser {
                 if let Some(next) = self.tokens.get(self.current+1) {
                     if matches!(next.token_type, TokenKind::Equals) {
                         let expr = self.parse_assignment().ok()?;
-                        self.consume(|t| matches!(t, TokenKind::SemiColon), "Expected SemiColon!(;)").ok()?;
-                        return Some(Statement::Expression(expr))
+                        match self.consume(|t| matches!(t, TokenKind::SemiColon), "Expected SemiColon!(;)") {
+                            Ok(_) => { return Some(Statement::Expression(expr)) },
+                            Err(err) => panic!("{:?}", &err),
+                        }
                     }
                 }
             }
